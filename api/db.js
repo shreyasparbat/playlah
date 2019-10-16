@@ -4,6 +4,7 @@ const moment = require('moment')
 
 // Parse dates as moment objects
 pg.types.setTypeParser(1082, val => moment.utc(val))
+pg.types.setTypeParser(1114, val => val)
 
 // Connect to postgres
 const Pool = pg.Pool
