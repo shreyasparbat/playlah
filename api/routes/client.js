@@ -1,9 +1,18 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express')
+const router = express.Router()
+const { pool } = require('../../db')
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+/* GET all clients */
+router.get('/all', async (req, res) => {
+  try {
+      const poolRes = await pool.query('select distinct clientname from demo')
+      res.send(poolRes.rows)
+  } catch (error) {
+      console.log(error.stack)
+      res.status(500).send({
+          error: error.stack
+      })
+  }
+})
 
-module.exports = router;
+module.exports = router
