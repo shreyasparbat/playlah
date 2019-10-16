@@ -43,7 +43,7 @@ if __name__ == '__main__':
             # Else store them
             if input_ and input_[0] != inputs[-1][0]:
                 inputs.append(input_)
-                print(inputs)
+                print('Key:', input_[0], 'Timestamp:', str(input_[1]), sep=' ')
             
             # Sleep
             time.sleep(0.01)
