@@ -1,24 +1,37 @@
 # Imports
 import time
 from datetime import datetime
+import requests
 import grovepi
 
+# Default client name
+clientname = 'test'
+
+# Format mech key input
 def get_input():
     if grovepi.digitalRead(2) == 1:
-        return [2, datetime.now()]
+        return { 'clientname': clientname, 'tappedkey': 2, 'timestamp': str(datetime.now())}
     if grovepi.digitalRead(3) == 1:
-        return [3, datetime.now()]
+        return { 'clientname': clientname, 'tappedkey': 3, 'timestamp': str(datetime.now())}
     if grovepi.digitalRead(4) == 1:
-        return [4, datetime.now()]
+        return { 'clientname': clientname, 'tappedkey': 4, 'timestamp': str(datetime.now())}
     if grovepi.digitalRead(5) == 1:
-        return [5, datetime.now()]
+        return { 'clientname': clientname, 'tappedkey': 5, 'timestamp': str(datetime.now())}
     if grovepi.digitalRead(6) == 1:
-        return [6, datetime.now()]
+        return { 'clientname': clientname, 'tappedkey': 6, 'timestamp': str(datetime.now())}
     if grovepi.digitalRead(7) == 1:
         return 'end'
 
-def end_game(inputs):
+
+# Send results to server and exit
+def end_game(scores):
+    # POST scores to server
+    
+    requests.post('http://ec2-54-169-209-209.ap-southeast-1.compute.amazonaws.com:3000/scores/add-demo-scores', json={
+        'scores': scores
+    })
     print('game over')
+
 
 # Run script if main process
 if __name__ == '__main__':
@@ -26,8 +39,8 @@ if __name__ == '__main__':
     for i in range(2, 8):
         grovepi.pinMode(i, 'INPUT')
     
-    # Store inputs
-    inputs = [[0,0]]
+    # Store scores (first entry is junk)
+    scores = [{ 'clientname': clientname, 'tappedkey': 0, 'timestamp': '2019-09-09'}]
     
     # Start inifite loop
     while True:
@@ -37,13 +50,13 @@ if __name__ == '__main__':
 
             # If 'end', then end the game
             if input_ == 'end':
-                end_game(inputs)
+                end_game(scores[1:])
                 exit(0)
 
             # Else store them
-            if input_ and input_[0] != inputs[-1][0]:
-                inputs.append(input_)
-                print('Key:', input_[0], 'Timestamp:', str(input_[1]), sep=' ')
+            if input_ and input_['tappedkey'] != scores[-1]['tappedkey']:
+                scores.append(input_)
+                print('Key: ' + str(input_['tappedkey']) + ', Timestamp: ' + input_['timestamp'])
             
             # Sleep
             time.sleep(0.01)
